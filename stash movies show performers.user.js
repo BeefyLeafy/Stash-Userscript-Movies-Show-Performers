@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Stash Movie Show Performers
-// @namespace    https://github.com/BeefyLeafy
+// @namespace    https://github.com/BeefyLeafy/Stash-Userscript-Movies-Show-Performers
 // @version      1.0.0
-// @description  Stash show performers on movies page. Image tooltip for performers on multiple movie cards pages.
+// @description  Stash show performers on movies page. Image tooltip for performers on movies wall style pages.
 // @author       BeefyLeafy
 // @match        http://localhost:9999/*
 // @icon         http://localhost:9999/favicon.ico
