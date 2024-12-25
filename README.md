@@ -4,6 +4,10 @@
 
 This userscript enhances the Stash movie interface by displaying performers on all movie pages. It shows performer details on the movies wall page, performer movies wall page, studio movies wall page, and movie details page. Additionally, it provides an image tooltip for performers when you hover over their names on the movies wall style pages.
 
+## Breaking Change!
+- Since stash app changed movies to groups in `v0.27.0`, the latest version of this script is only compatable with `v0.27.0` or later.
+- For older version of this script, please use this install [link](https://github.com/BeefyLeafy/Stash-Userscript-Movies-Show-Performers/raw/187a79bf0d41bdef276067a99d4e36d562091f6f/stash%20movies%20show%20performers.user.js)
+
 ## Features
 
 - **Display Performers**: Shows the list of performers on the movies page and the movie details page.

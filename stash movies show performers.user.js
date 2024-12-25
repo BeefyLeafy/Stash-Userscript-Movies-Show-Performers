@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         Stash Movie Show Performers
-// @namespace    https://github.com/BeefyLeafy/Stash-Userscript-Movies-Show-Performers
+// @namespace    https://github.com/BeefyLeafy
 // @version      1.0.0
-// @description  Stash show performers on movies page. Image tooltip for performers on movies wall style pages.
+// @description  Stash show performers on Groups (Movies) page. Image tooltip for performers on multiple movie cards pages.
 // @author       BeefyLeafy
 // @match        http://localhost:9999/*
 // @icon         http://localhost:9999/favicon.ico
 // @require      https://raw.githubusercontent.com/BeefyLeafy/Tooltips/master/Tooltips.min.js
-// @require      https://raw.githubusercontent.com/7dJx1qP/stash-userscripts/master/src\StashUserscriptLibrary.js
+// @require      https://raw.githubusercontent.com/BeefyLeafy/stash-userscripts/refs/heads/master/src/StashUserscriptLibrary.js
 // @grant        GM_addStyle
 // ==/UserScript==
 
@@ -23,12 +23,12 @@
     const tooltipHelper = new TooltipHelper();
     // Add css
     GM_addStyle(`
-                 .movie-card-performer {color : #C4B1A5}
-                 .movie-card-performer a {font-weight: bold; color: #CCBCB2}
+                 .group-card-performer {color : #C4B1A5}
+                 .group-card-performer a {font-weight: bold; color: #CCBCB2}
                  custom-tooltip img {width: 150px}
                  .detail-item-title.block {display: block !important}
-                 .movie-performer-img-container {width: 100px; display: inline-block; margin-top: 10px; margin-right:20px}
-                 .movie-performer-img-container .img-link {display: block; position: relative; width: 100%; text-decoration: none}
+                 .group-performer-img-container {width: 100px; display: inline-block; margin-top: 10px; margin-right:20px}
+                 .group-performer-img-container .img-link {display: block; position: relative; width: 100%; text-decoration: none}
                  .img-link img {width: 100%; height: auto}
                  .img-link .img-caption {position: absolute; bottom: 0; left: 0; right: 0; background-color: rgba(0,0,0,0.5);
                      color: rgb(232, 230, 227); text-align: center; padding: 5px; box-sizing: border-box}
@@ -41,35 +41,35 @@
         return uniquePerformers;
     };
     // Function that contains the main logic for all movies page
-    const setMoviesPerformers = async () => {
-        await waitForElementClass("movie-card-header", () => {
-            const movieIDs = [...document.querySelectorAll("a.movie-card-header")].map(elem => elem.href.match(/movies\/([0-9]+)/)[1]);
+    const setGroupsPerformers = async () => {
+        await waitForElementClass("group-card-header", () => {
+            const groupIDs = [...document.querySelectorAll("a.group-card-header")].map(elem => elem.href.match(/groups\/([0-9]+)/)[1]);
 
-            stash.callGQL({"query":`{findMovies(ids:[${movieIDs}]) {movies {id, scenes {performers {id, name} } } } }`})
+            stash.callGQL({"query":`{findGroups(ids:[${groupIDs}]) {groups {id, scenes {performers {id, name} } } } }`})
                 .then(json => {
-                const movies = json.data.findMovies.movies;
-                movies.forEach(movie => {
-                    const uniquePerformers = getUniquePerformersFromScenes(movie.scenes);
-                    const movieTitleElem = getElementByXpath(`//a[@href='/movies/${movie.id}' and not(contains(@class, 'movie-card-header'))]`);
-                    // Skip the logic if the next element of movieTitle is already added (class name "movie-card-performer")
-                    if (movieTitleElem.nextSibling.className === "movie-card-performer") {
+                const groups = json.data.findGroups.groups;
+                groups.forEach(group => {
+                    const uniquePerformers = getUniquePerformersFromScenes(group.scenes);
+                    const groupTitleElem = getElementByXpath(`//a[@href='/groups/${group.id}' and not(contains(@class, 'group-card-header'))]`);
+                    // Skip the logic if the next element of groupTitle is already added (class name "group-card-performer")
+                    if (groupTitleElem.nextSibling.className === "group-card-performer") {
                         return;
                     }
                     if (uniquePerformers.length > 0) {
-                        const moviePerformersDiv = document.createElement("div");
-                        moviePerformersDiv.className = "movie-card-performer";
-                        moviePerformersDiv.appendChild(document.createTextNode("With "));
+                        const groupPerformersDiv = document.createElement("div");
+                        groupPerformersDiv.className = "group-card-performer";
+                        groupPerformersDiv.appendChild(document.createTextNode("With "));
                         uniquePerformers.forEach((performer, idx) => {
                             const performerElem = document.createElement('a');
                             performerElem.href = `/performers/${performer.id}`;
                             performerElem.text = performer.name;
-                            moviePerformersDiv.appendChild(performerElem);
+                            groupPerformersDiv.appendChild(performerElem);
                             // Add a comma if this is not the last element
                             if (idx < uniquePerformers.length - 1) {
-                                moviePerformersDiv.appendChild(document.createTextNode(', '));
+                                groupPerformersDiv.appendChild(document.createTextNode(', '));
                             }
-                            // Insert the moviePerformersDiv after the movie title element
-                            movieTitleElem.after(moviePerformersDiv);
+                            // Insert the groupPerformersDiv after the group title element
+                            groupTitleElem.after(groupPerformersDiv);
                             // Create performer image tooltip
                             const performerImage = document.createElement("img");
                             performerImage.src = `/performer/${performer.id}/image`;
@@ -82,17 +82,17 @@
         });
     };
     // Function that contains all the logic for the movie detials page (single movie)
-    const setSingleMoviePerformers = async () => {
+    const setSingleGroupPerformers = async () => {
         await waitForElementClass("detail-group", () => {
-            const movieID = new URL(window.location.href).pathname.match(/movies\/([0-9]+)/)[1];
+            const groupID = new URL(window.location.href).pathname.match(/groups\/([0-9]+)/)[1];
             // Skip logic if already added performers div
             if (document.querySelector(".detail-item.performers")) {
                 return;
             }
 
-            stash.callGQL({"query":`{findMovies(ids:[${movieID}]) {movies {scenes {performers {id, name} } } } }`})
+            stash.callGQL({"query":`{findGroups(ids:[${groupID}]) {groups {scenes {performers {id, name} } } } }`})
                 .then(json => {
-                const uniquePerformers = getUniquePerformersFromScenes(json.data.findMovies.movies[0].scenes);
+                const uniquePerformers = getUniquePerformersFromScenes(json.data.findGroups.groups[0].scenes);
                 if (uniquePerformers.length > 0) {
                     const detailDiv = document.querySelector(".detail-group");
                     const wrapperDiv = document.createElement("div");
@@ -105,7 +105,7 @@
                     uniquePerformers.forEach(performer => {
                         // Append performer images (image links in the div)
                         const imageDiv = document.createElement("div");
-                        imageDiv.className = "movie-performer-img-container";
+                        imageDiv.className = "group-performer-img-container";
                         const image = document.createElement("img");
                         image.src = `/performer/${performer.id}/image`;
                         const aLink = document.createElement("a");
@@ -126,9 +126,9 @@
         });
     };
 
-    stash.addEventListener('page:movies', setMoviesPerformers);
-    stash.addEventListener('page:performer:movies', setMoviesPerformers);
-    stash.addEventListener('page:studio:movies', setMoviesPerformers);
-    stash.addEventListener('page:movie:scenes', setSingleMoviePerformers);
-    stash.addEventListener('page:movie', setSingleMoviePerformers);
+    stash.addEventListener('page:groups', setGroupsPerformers);
+    stash.addEventListener('page:performer:groups', setGroupsPerformers);
+    stash.addEventListener('page:studio:groups', setGroupsPerformers);
+    stash.addEventListener('page:group:scenes', setSingleGroupPerformers);
+    stash.addEventListener('page:group', setSingleGroupPerformers);
 })();
