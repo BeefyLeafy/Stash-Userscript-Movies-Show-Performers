@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Stash Movie Show Performers
 // @namespace    https://github.com/BeefyLeafy
-// @version      1.0.0
+// @version      1.1.0
 // @description  Stash show performers on Groups (Movies) page. Image tooltip for performers on multiple movie cards pages.
 // @author       BeefyLeafy
 // @match        http://localhost:9999/*
