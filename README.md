@@ -21,7 +21,7 @@ This userscript enhances the Stash movie interface by displaying performers on a
 1. **Install a Userscript Manager**: If you don't already have one, install a userscript manager such as [Tampermonkey](https://www.tampermonkey.net/) or [Greasemonkey](https://www.greasespot.net/).
 
 2. **Add the Script**:
-   - Use this [link](https://github.com/BeefyLeafy/Stash-Userscript-Movies-Show-Performers/raw/main/stash%20movies%20show%20performers.user.js)
+   - Use this [link](https://github.com/BeefyLeafy/Stash-Userscript-Movies-Show-Performers/raw/refs/heads/main/stash%20movies%20show%20performers.user.js)
 
 4. **Adjust Settings**: 
    - Update the `GRAPHQL_ENDPOINT` variable in the script to match your Stash instance’s IP address and port if necessary.
